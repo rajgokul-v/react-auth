@@ -15,16 +15,36 @@ export function AuthProvider({ children }) {
 		return auth.createUserWithEmailAndPassword(email, password)
 	}
 
+	function Signin(email, password) {
+		return auth.signInWithEmailAndPassword(email, password)
+	}
+
+	function Signout() {
+		return auth.signOut()
+	}
+
+	function UpdateDisplayName(name) {
+		return auth.currentUser.updateProfile({ displayName: name })
+	}
+
 	useEffect(() => {
 		const unsubscribe = auth.onAuthStateChanged((user) => {
 			setCurrentUser(user)
+
+			localStorage.setItem('user', {
+				email: currentUser.email,
+				displayName: currentUser.displayName
+			})
 		})
 		return unsubscribe
 	}, [])
 
 	const value = {
 		currentUser,
-		Signup
+		Signup,
+		Signin,
+		Signout,
+		UpdateDisplayName
 	}
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

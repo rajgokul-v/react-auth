@@ -1,15 +1,16 @@
 import React, { useRef, useState } from 'react'
 import { Card, Button, Form, Alert } from 'react-bootstrap'
 import { useAuth } from '../contexts/AuthContext'
+import { Link } from 'react-router-dom'
 
 function Signup() {
+	const nameRef = useRef()
 	const emailRef = useRef()
 	const passwordRef = useRef()
 	const passwordConfirmRef = useRef()
-	const { Signup } = useAuth()
-	const [user, setUser] = useState()
-	const [isLoading, setIsLoading] = useState(false)
+	const { Signup, UpdateDisplayName, currentUser } = useAuth()
 
+	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState('')
 
 	async function handleSubmit(e) {
@@ -21,11 +22,12 @@ function Signup() {
 		try {
 			setError('')
 			setIsLoading(true)
-			let res = await Signup(emailRef.current.value, passwordRef.current.value)
-			setUser(res.user)
+
+			await Signup(emailRef.current.value, passwordRef.current.value)
+			await UpdateDisplayName(nameRef.current.value)
+
 			setIsLoading(false)
 		} catch (error) {
-			console.log(error)
 			setError(error.message)
 			setIsLoading(false)
 		}
@@ -37,8 +39,14 @@ function Signup() {
 				<Card.Body>
 					<h2 className="text-center mb-4">Signup</h2>
 					{error && <Alert variant="danger">{error}</Alert>}
-					{user && <Alert variant="primary">{user.email}</Alert>}
+					{currentUser && (
+						<Alert variant="primary">{currentUser.displayName}</Alert>
+					)}
 					<Form onSubmit={handleSubmit}>
+						<Form.Group id="name">
+							<Form.Label>Name</Form.Label>
+							<Form.Control type="text" ref={nameRef} required />
+						</Form.Group>
 						<Form.Group id="email">
 							<Form.Label>Email</Form.Label>
 							<Form.Control type="email" ref={emailRef} required />
@@ -58,7 +66,7 @@ function Signup() {
 				</Card.Body>
 			</Card>
 			<div className="w-100 text-center mt-2">
-				<a href="">Already have an account?</a>
+				Already have an account?<Link to="/SignIn">Sign In</Link>
 			</div>
 		</>
 	)
