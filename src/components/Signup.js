@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { Card, Button, Form, Alert } from 'react-bootstrap'
 import { useAuth } from '../contexts/AuthContext'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 
 function Signup() {
 	const nameRef = useRef()
@@ -12,6 +12,7 @@ function Signup() {
 
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState('')
+	const history = useHistory()
 
 	async function handleSubmit(e) {
 		e.preventDefault()
@@ -25,6 +26,7 @@ function Signup() {
 
 			await Signup(emailRef.current.value, passwordRef.current.value)
 			await UpdateDisplayName(nameRef.current.value)
+			history.push('/')
 
 			setIsLoading(false)
 		} catch (error) {
@@ -33,15 +35,14 @@ function Signup() {
 		}
 	}
 
+	if (currentUser && !isLoading) history.push('/')
+
 	return (
 		<>
 			<Card>
 				<Card.Body>
-					<h2 className="text-center mb-4">Signup</h2>
+					<h3 className="text-center mb-4">Sign Up</h3>
 					{error && <Alert variant="danger">{error}</Alert>}
-					{currentUser && (
-						<Alert variant="primary">{currentUser.displayName}</Alert>
-					)}
 					<Form onSubmit={handleSubmit}>
 						<Form.Group id="name">
 							<Form.Label>Name</Form.Label>
@@ -59,14 +60,18 @@ function Signup() {
 							<Form.Label>Password Confirmation</Form.Label>
 							<Form.Control type="password" ref={passwordConfirmRef} required />
 						</Form.Group>
-						<Button className="w-100" type="submit" disabled={isLoading}>
-							{isLoading ? 'Signing up...' : 'Signup'}
+						<Button
+							className="w-100 mt-3 mb-3"
+							type="submit"
+							disabled={isLoading}
+						>
+							{isLoading ? 'Signing up...' : 'Sign Up'}
 						</Button>
 					</Form>
 				</Card.Body>
 			</Card>
 			<div className="w-100 text-center mt-2">
-				Already have an account?<Link to="/SignIn">Sign In</Link>
+				Already have an account? <Link to="/signin">Sign In</Link>
 			</div>
 		</>
 	)

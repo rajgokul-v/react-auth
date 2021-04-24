@@ -20,10 +20,13 @@ export function AuthProvider({ children }) {
 	}
 
 	function Signout() {
+		localStorage.removeItem('name')
+		localStorage.removeItem('email')
 		return auth.signOut()
 	}
 
 	function UpdateDisplayName(name) {
+		localStorage.setItem('name', name)
 		return auth.currentUser.updateProfile({ displayName: name })
 	}
 
@@ -31,13 +34,13 @@ export function AuthProvider({ children }) {
 		const unsubscribe = auth.onAuthStateChanged((user) => {
 			setCurrentUser(user)
 
-			localStorage.setItem('user', {
-				email: currentUser.email,
-				displayName: currentUser.displayName
-			})
+			if (user?.displayName) localStorage.setItem('name', user.displayName)
+			if (user?.email) localStorage.setItem('email', user.email)
 		})
 		return unsubscribe
 	}, [])
+
+	useEffect(() => {}, [currentUser])
 
 	const value = {
 		currentUser,

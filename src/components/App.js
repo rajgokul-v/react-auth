@@ -5,6 +5,8 @@ import { AuthProvider } from '../contexts/AuthContext'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import Dashboard from './Dashboard'
 import SignIn from './SignIn'
+import PageNotFound from './PageNotFound'
+
 function App() {
 	return (
 		<Container
@@ -14,11 +16,12 @@ function App() {
 			<div className="w-100" style={{ maxWidth: '400px' }}>
 				<Router>
 					<AuthProvider>
-						<switch>
+						<Switch>
 							<Route exact path="/" component={Dashboard} />
 							<Route path="/signup" component={Signup} />
 							<Route path="/signin" component={SignIn} />
-						</switch>
+							<Route path="*" component={PageNotFound} />
+						</Switch>
 					</AuthProvider>
 				</Router>
 			</div>
