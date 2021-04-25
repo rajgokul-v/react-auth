@@ -8,7 +8,7 @@ function Signup() {
 	const emailRef = useRef()
 	const passwordRef = useRef()
 	const passwordConfirmRef = useRef()
-	const { Signup, UpdateDisplayName, currentUser } = useAuth()
+	const { Signup, UpdateDisplayName } = useAuth()
 
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState('')
@@ -26,16 +26,14 @@ function Signup() {
 
 			await Signup(emailRef.current.value, passwordRef.current.value)
 			await UpdateDisplayName(nameRef.current.value)
-			history.push('/')
-
 			setIsLoading(false)
+
+			history.push('/')
 		} catch (error) {
 			setError(error.message)
 			setIsLoading(false)
 		}
 	}
-
-	if (currentUser && !isLoading) history.push('/')
 
 	return (
 		<>

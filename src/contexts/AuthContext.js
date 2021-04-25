@@ -40,8 +40,6 @@ export function AuthProvider({ children }) {
 		return unsubscribe
 	}, [])
 
-	useEffect(() => {}, [currentUser])
-
 	const value = {
 		currentUser,
 		Signup,

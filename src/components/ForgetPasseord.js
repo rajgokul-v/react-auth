@@ -1,58 +1,49 @@
 import React, { useRef, useState } from 'react'
 import { Card, Button, Form, Alert } from 'react-bootstrap'
-import { Link, useHistory } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
-export default function SignIn() {
+export default function Forgetpassword() {
 	const emailRef = useRef()
-	const passwordRef = useRef()
-	const { Signin } = useAuth()
-
+	const { resetPassword } = useAuth()
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState('')
-	const history = useHistory()
+	const [message, setMessage] = useState('')
 
 	async function handleSubmit(e) {
 		e.preventDefault()
 
 		try {
+			setMessage('')
 			setError('')
 			setIsLoading(true)
+			await resetPassword(emailRef.current.value)
+			setMessage('check your inbox for further instruction')
 
-			await Signin(emailRef.current.value, passwordRef.current.value)
 			setIsLoading(false)
-
-			history.push('/')
 		} catch (error) {
-			if (error.code === 'auth/wrong-password')
-				setError('Incorrect email or password')
-			else if (error.code === 'auth/user-not-found') setError('User not found')
-
-			setIsLoading(false)
+			setError('Failed to reset password')
 		}
+		setIsLoading(false)
 	}
-
 	return (
 		<>
 			<Card>
 				<Card.Body>
-					<h3 className="text-center mb-4">Sign In</h3>
+					<h3 className="text-center mb-4">Password reset</h3>
 					{error && <Alert variant="danger">{error}</Alert>}
+					{message && <Alert variant="success">{message}</Alert>}
 					<Form onSubmit={handleSubmit}>
 						<Form.Group id="email">
 							<Form.Label>Email</Form.Label>
 							<Form.Control type="email" ref={emailRef} required />
 						</Form.Group>
-						<Form.Group id="password">
-							<Form.Label>Password</Form.Label>
-							<Form.Control type="password" ref={passwordRef} required />
-						</Form.Group>
 						<Button className="w-100 mt-3" type="submit" disabled={isLoading}>
-							{isLoading ? 'Signing In...' : 'Sign In'}
+							{isLoading ? 'Reseting...' : 'Reset'}
 						</Button>
 					</Form>
 					<div className="w-100 text-center mt-3">
-						<Link to="/forget-password">Forget Password?</Link>
+						<Link to="/signin">Sign In</Link>
 					</div>
 				</Card.Body>
 			</Card>
