@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react'
 import { Form, Alert, Button, Card } from 'react-bootstrap'
 import { useAuth } from '../contexts/AuthContext'
-import { useHistory } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 
 export default function Dashboard() {
 	const { currentUser, Signout, UpdateDisplayName } = useAuth()
@@ -42,17 +42,23 @@ export default function Dashboard() {
 		<>
 			<Card>
 				<Card.Body>
-					<div className="d-flex justify-content-between align-items-center">
+					<h3 className="text-center mb-4">Profile</h3>
+					<div className="jumbotron text-center mb-9">
 						<span>
 							Welcome{' '}
 							<b>{currentUser?.displayName || currentUser?.email || 'Guest'}</b>
 						</span>
-
-						<Button onClick={handleSignout}>Signout</Button>
 					</div>
+					<Link
+						to="/update-profile"
+						className=" w-100 text-center mt-2  align-iems-center btn btn-primary active "
+					>
+						Update profile
+					</Link>
 
 					{!currentUser?.displayName && (
 						<div className="mt-5">
+							<h3 className="text-center mb-4">Profile</h3>
 							{error && <Alert variant="danger">{error}</Alert>}
 							<Form onSubmit={handleSubmit}>
 								<Form.Group id="name">
@@ -71,6 +77,11 @@ export default function Dashboard() {
 					)}
 				</Card.Body>
 			</Card>
+			<div className="w-100 text-center mt-2">
+				<Button variant="link" onClick={handleSignout}>
+					Log out
+				</Button>
+			</div>
 		</>
 	)
 }
