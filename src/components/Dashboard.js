@@ -40,7 +40,7 @@ export default function Dashboard() {
 
 	return (
 		<>
-			<Card>
+			<Card className="shadow p-3 mb-5 bg-white rounded">
 				<Card.Body>
 					<h3 className="text-center mb-4">Profile</h3>
 					<div className="jumbotron text-center mb-9">

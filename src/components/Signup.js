@@ -37,7 +37,7 @@ function Signup() {
 
 	return (
 		<>
-			<Card>
+			<Card className="shadow p-3 mb-5 bg-white rounded">
 				<Card.Body>
 					<h3 className="text-center mb-4">Sign Up</h3>
 					{error && <Alert variant="danger">{error}</Alert>}
