@@ -1,7 +1,8 @@
 import React, { useRef, useState } from 'react'
 import { Card, Button, Form, Alert } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
+import { useAuth } from '../../contexts/AuthContext'
+import { paths } from '../../routes/path'
 
 export default function Forgetpassword() {
 	const emailRef = useRef()
@@ -17,7 +18,7 @@ export default function Forgetpassword() {
 			setMessage('')
 			setError('')
 			setIsLoading(true)
-			await resetPassword(emailRef.current.value)
+			await resetPassword(emailRef.current?.value)
 			setMessage('check your inbox for further instruction')
 
 			setIsLoading(false)
@@ -43,12 +44,12 @@ export default function Forgetpassword() {
 						</Button>
 					</Form>
 					<div className="w-100 text-center mt-3">
-						<Link to="/signin">Sign In</Link>
+						<Link to={paths.LOGIN}>Sign In</Link>
 					</div>
 				</Card.Body>
 			</Card>
 			<div className="w-100 text-center mt-2">
-				Need an account? <Link to="/signup">Sign Up</Link>
+				Need an account? <Link to={paths.REGISTER}>Sign Up</Link>
 			</div>
 		</>
 	)

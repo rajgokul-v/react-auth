@@ -8,53 +8,57 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }) {
+	const [isAuthenticated, setIsAuthenticated] = useState()
 	const [currentUser, setCurrentUser] = useState()
-
+	useEffect(() => {
+		const _user = JSON.parse(localStorage.getItem('user'))
+		setIsAuthenticated(_user ? true : false)
+	})
 	// Signup a new user
 	function Signup(email, password) {
 		return auth.createUserWithEmailAndPassword(email, password)
 	}
 
 	function Signin(email, password) {
+		setIsAuthenticated('true')
 		return auth.signInWithEmailAndPassword(email, password)
 	}
 
 	function Signout() {
-		localStorage.removeItem('name')
-		localStorage.removeItem('email')
+		localStorage.removeItem('user')
+		setIsAuthenticated('false')
 		return auth.signOut()
 	}
 
 	function UpdateDisplayName(name) {
-		localStorage.setItem('name', name)
 		return auth.currentUser.updateProfile({ displayName: name })
 	}
 
 	function UpdateEmail(email) {
-		return currentUser.updateEmail(email)
+		return auth.currentUser.updateEmail(email)
 	}
-	function UpdatePassword(password) {
-		return currentUser.UpdatePassword(password)
+	function resetPassword(email) {
+		return auth.sendPasswordResetEmail(email)
 	}
 
 	useEffect(() => {
 		const unsubscribe = auth.onAuthStateChanged((user) => {
 			setCurrentUser(user)
 
-			if (user?.displayName) localStorage.setItem('name', user.displayName)
-			if (user?.email) localStorage.setItem('email', user.email)
+			if (user) localStorage.setItem('user', JSON.stringify(user))
 		})
 		return unsubscribe
 	}, [])
 
 	const value = {
 		currentUser,
+		isAuthenticated,
 		Signup,
 		Signin,
 		Signout,
 		UpdateDisplayName,
 		UpdateEmail,
-		UpdatePassword
+		resetPassword
 	}
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

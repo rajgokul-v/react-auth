@@ -1,45 +1,35 @@
 import React, { useRef, useState } from 'react'
 import { Card, Button, Form, Alert } from 'react-bootstrap'
-import { useAuth } from '../contexts/AuthContext'
+import { useAuth } from '../../contexts/AuthContext'
 import { Link, useHistory } from 'react-router-dom'
+import { paths } from '../../routes/path'
 
 export default function UpdateProfile() {
 	const nameRef = useRef()
 	const emailRef = useRef()
 	const passwordRef = useRef()
 	const passwordConfirmRef = useRef()
-	const {
-		currentUser,
-		UpdateEmail,
-		UpdatePassword,
-		UpdateDisplayName
-	} = useAuth()
+	const { currentUser, UpdateDisplayName } = useAuth()
 
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState('')
+	const [show, setshow] = useState(false)
 	const history = useHistory()
 
 	function handleSubmit(e) {
 		e.preventDefault()
-		if (passwordRef.current.value !== passwordConfirmRef.current.value)
-			return setError('Password not matching')
+		if (passwordRef.current.value === '')
+			return setError('please enter your password')
 
 		const promises = []
 		setIsLoading(true)
 		setError('')
-		if (nameRef.current.value !== currentUser.name) {
+		if (nameRef.current.value !== currentUser?.name) {
 			promises.push(UpdateDisplayName(nameRef.current.value))
 		}
-		if (emailRef.current.value !== currentUser.email) {
-			promises.push(UpdateEmail(emailRef.current.value))
-		}
-		if (passwordRef.current.value) {
-			promises.push(UpdatePassword(passwordRef.current.value))
-		}
-		promises
-			.all(promises)
+		Promise.all(promises)
 			.then(() => {
-				history.push('/')
+				history.push(paths.DASHBOARD)
 			})
 			.catch(() => {
 				setError('Failed to update account')
@@ -61,7 +51,7 @@ export default function UpdateProfile() {
 							<Form.Control
 								type="text"
 								ref={nameRef}
-								defaultValue={currentUser.name}
+								defaultValue={currentUser?.name}
 							/>
 						</Form.Group>
 						<Form.Group id="email">
@@ -69,24 +59,19 @@ export default function UpdateProfile() {
 							<Form.Control
 								type="email"
 								ref={emailRef}
-								defaultValue={currentUser.email}
+								defaultValue={currentUser?.email}
 							/>
 						</Form.Group>
 						<Form.Group id="password">
 							<Form.Label>Password</Form.Label>
 							<Form.Control
-								type="password"
+								type={show ? 'password' : 'text'}
 								ref={passwordRef}
 								placeholder="Leave blank to keep the same "
 							/>
-						</Form.Group>
-						<Form.Group id="password-confirm">
-							<Form.Label>Password Confirmation</Form.Label>
-							<Form.Control
-								type="password"
-								ref={passwordConfirmRef}
-								placeholder="Leave blank to keep the same "
-								required
+							<i
+								class={show ? 'bx bx-hide' : 'bx bx-show'}
+								onClick={() => setshow(!show)}
 							/>
 						</Form.Group>
 						<Button
@@ -94,14 +79,11 @@ export default function UpdateProfile() {
 							type="submit"
 							disabled={isLoading}
 						>
-							{isLoading ? 'Signing up...' : 'Sign Up'}
+							{isLoading ? 'Updating...' : 'update'}
 						</Button>
 					</Form>
 				</Card.Body>
 			</Card>
-			<div className="w-100 text-center mt-2">
-				Already have an account? <Link to="/signin">Sign In</Link>
-			</div>
 		</>
 	)
 }

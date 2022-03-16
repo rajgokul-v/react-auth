@@ -1,17 +1,20 @@
 import React, { useRef, useState } from 'react'
 import { Card, Button, Form, Alert } from 'react-bootstrap'
-import { useAuth } from '../contexts/AuthContext'
+import { useAuth } from '../../../src/contexts/AuthContext'
 import { Link, useHistory } from 'react-router-dom'
+import { Redirect } from 'react-router-dom'
+import { paths } from '../../routes/path'
 
 function Signup() {
 	const nameRef = useRef()
 	const emailRef = useRef()
 	const passwordRef = useRef()
 	const passwordConfirmRef = useRef()
-	const { Signup, UpdateDisplayName } = useAuth()
+	const { isAuthenticated, Signup, UpdateDisplayName } = useAuth()
 
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState('')
+	const [show, setshow] = useState(false)
 	const history = useHistory()
 
 	async function handleSubmit(e) {
@@ -19,6 +22,18 @@ function Signup() {
 
 		if (passwordRef.current.value !== passwordConfirmRef.current.value)
 			return setError('Password not matching')
+
+		if (passwordRef.current.value === '') {
+			return setError('Please enter your password')
+		}
+
+		if (nameRef.current.value === '') {
+			return setError('Please enter your name')
+		}
+
+		if (emailRef.current.value === '') {
+			return setError('Please enter your email')
+		}
 
 		try {
 			setError('')
@@ -28,11 +43,15 @@ function Signup() {
 			await UpdateDisplayName(nameRef.current.value)
 			setIsLoading(false)
 
-			history.push('/')
+			history.push(paths.DASHBOARD)
 		} catch (error) {
 			setError(error.message)
 			setIsLoading(false)
 		}
+	}
+
+	if (isAuthenticated) {
+		return <Redirect to={paths.DASHBOARD} />
 	}
 
 	return (
@@ -44,19 +63,29 @@ function Signup() {
 					<Form onSubmit={handleSubmit}>
 						<Form.Group id="name">
 							<Form.Label>Name</Form.Label>
-							<Form.Control type="text" ref={nameRef} required />
+							<Form.Control type="text" ref={nameRef} />
 						</Form.Group>
 						<Form.Group id="email">
 							<Form.Label>Email</Form.Label>
-							<Form.Control type="email" ref={emailRef} required />
+							<Form.Control type="email" ref={emailRef} />
 						</Form.Group>
 						<Form.Group id="password">
 							<Form.Label>Password</Form.Label>
-							<Form.Control type="password" ref={passwordRef} required />
+							<Form.Control
+								type={show ? 'text' : 'password'}
+								ref={passwordRef}
+							/>
+							<i
+								class={show ? 'bx bx-show' : 'bx bx-hide'}
+								onClick={() => setshow(!show)}
+							/>
 						</Form.Group>
 						<Form.Group id="password-confirm">
 							<Form.Label>Password Confirmation</Form.Label>
-							<Form.Control type="password" ref={passwordConfirmRef} required />
+							<Form.Control
+								type={show ? 'text' : 'password'}
+								ref={passwordConfirmRef}
+							/>
 						</Form.Group>
 						<Button
 							className="w-100 mt-3 mb-3"
@@ -69,7 +98,7 @@ function Signup() {
 				</Card.Body>
 			</Card>
 			<div className="w-100 text-center mt-2">
-				Already have an account? <Link to="/signin">Sign In</Link>
+				Already have an account? <Link to={paths.LOGIN}>Sign In</Link>
 			</div>
 		</>
 	)
